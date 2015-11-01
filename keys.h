@@ -1,9 +1,9 @@
 #ifndef KEYS_H_
 # define KEYS_H_
 
-static const char *keycode[][2] = {
+static char *keycode[][2] = {
   {"\0", "\0"},
-  {"_ESC_", "_ESC_"},
+  {"ESC", "ESC"},
   {"1", "!"},
   {"2", "@"},
   {"3", "#"},
